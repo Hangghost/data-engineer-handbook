@@ -71,4 +71,16 @@ SELECT
 FROM today t FULL OUTER JOIN yesterday y
   ON t.player_name = y.player_name
 
-SELECT * FROM players WHERE current_season = 1996;
+-- 第四步：執行 UNNEST 查詢
+
+WITH unnested AS (
+  SELECT player_name,
+        UNNEST(season_stats)::season_stats AS season_stats
+  FROM players
+  WHERE current_season = 2001
+    AND player_name = 'Michael Jordan'
+)
+
+SELECT player_name,
+  (season_stats::season_stats).*
+FROM unnested;
