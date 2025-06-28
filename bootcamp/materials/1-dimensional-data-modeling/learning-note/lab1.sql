@@ -29,6 +29,8 @@ SELECT * FROM player_seasons;
 SELECT MIN(season) FROM player_seasons;
 
 -- 第三步：執行複雜的分析查詢
+
+INSERT INTO players
 WITH yesterday AS (
   SELECT * FROM players
   WHERE current_season = 1995
@@ -68,3 +70,5 @@ SELECT
   
 FROM today t FULL OUTER JOIN yesterday y
   ON t.player_name = y.player_name
+
+SELECT * FROM players WHERE current_season = 1996;
