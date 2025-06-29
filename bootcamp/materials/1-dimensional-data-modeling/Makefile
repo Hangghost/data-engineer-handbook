@@ -23,7 +23,7 @@ stop:
 
 .PHONY: start
 start:
-	docker logs start
+	docker compose start
 
 .PHONY: restart
 restart:
