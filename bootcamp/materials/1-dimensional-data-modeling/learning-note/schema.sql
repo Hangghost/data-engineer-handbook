@@ -11,6 +11,9 @@ CREATE TYPE season_stats AS (
   ast REAL
 );
 
+CREATE TYPE scoring_class AS
+  ENUM ('bad', 'average', 'good', 'star');
+
 CREATE TABLE players (
   player_name TEXT,
   height TEXT,
@@ -20,6 +23,8 @@ CREATE TABLE players (
   draft_round TEXT,
   draft_number TEXT,
   season_stats season_stats[],
+  scoring_class scoring_class,
+  years_since_last_season INTEGER,
   current_season INTEGER,
   PRIMARY KEY (player_name, current_season)
 );
