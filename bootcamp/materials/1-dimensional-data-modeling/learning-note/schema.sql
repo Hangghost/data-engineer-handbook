@@ -2,6 +2,7 @@ SELECT * FROM player_seasons;
 
 -- 第一步：只執行 DDL 部分
 DROP TABLE IF EXISTS players;
+DROP TYPE IF EXISTS season_stats;
 
 CREATE TYPE season_stats AS (
   season INTEGER,
