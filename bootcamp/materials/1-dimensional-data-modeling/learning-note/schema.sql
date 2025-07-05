@@ -15,21 +15,48 @@ CREATE TYPE season_stats AS (
 CREATE TYPE scoring_class AS
   ENUM ('bad', 'average', 'good', 'star');
 
+-- Lab1 Players Table
 CREATE TABLE players (
-  player_name TEXT,
-  height TEXT,
-  college TEXT,
-  country TEXT,
-  draft_year TEXT,
-  draft_round TEXT,
-  draft_number TEXT,
-  season_stats season_stats[],
-  scoring_class scoring_class,
-  years_since_last_season INTEGER,
-  current_season INTEGER,
+    player_name TEXT,
+    height TEXT,
+    college TEXT,
+    country TEXT,
+    draft_year TEXT,
+    draft_round TEXT,
+    draft_number TEXT,
+    seasons season_stats[],
+    scoring_class scoring_class,
+    years_since_last_active INTEGER,
+    is_active BOOLEAN,
+    current_season INTEGER,
+    PRIMARY KEY (player_name, current_season)
+);
+
+-- Lab2 SCD Table
+create table players_scd_table
+(
+	player_name text,
+	scoring_class scoring_class,
+	is_active boolean,
+	start_season integer,
+	end_date integer,
+	current_season INTEGER,
   PRIMARY KEY (player_name, current_season)
 );
 
 -- 第二步：確認表格建立成功後，再執行查詢
 SELECT * FROM player_seasons;
 SELECT MIN(season) FROM player_seasons;
+
+SELECT player_name, scoring_class, is_active
+FROM players
+WHERE current_season = 2022;
+
+SELECT
+  player_name,
+  scoring_class,
+  current_season,
+  is_active,
+  LAG(is_active) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_scoring_class,
+  LAG(scoring_class) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_is_active
+FROM players
