@@ -67,11 +67,10 @@ FROM players
 ---- Establish indicator for scoring_class and is_active change
 WITH with_indicator AS (
 SELECT *, 
-  CASE WHEN scoring_class <> previous_scoring_class THEN 1 
-  ELSE 0 
-  END AS scoring_class_change_indicator,
-  CASE WHEN is_active <> previous_is_active THEN 1 
-  ELSE 0 
-  END AS is_active_change_indicator
+  CASE 
+    WHEN scoring_class <> previous_scoring_class THEN 1 
+    WHEN is_active <> previous_is_active THEN 1 
+    ELSE 0 
+  END AS change_indicator
 FROM with_previous
 )
