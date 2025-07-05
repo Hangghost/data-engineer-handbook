@@ -33,7 +33,7 @@ CREATE TABLE players (
 );
 
 -- Lab2 SCD Table
-create table players_scd_table
+create table players_scd
 (
 	player_name text,
 	scoring_class scoring_class,
@@ -41,7 +41,7 @@ create table players_scd_table
 	start_season integer,
 	end_date integer,
 	current_season INTEGER,
-  PRIMARY KEY (player_name, current_season)
+  PRIMARY KEY (player_name, start_season)
 );
 
 -- 第二步：確認表格建立成功後，再執行查詢
@@ -51,43 +51,4 @@ SELECT MIN(season) FROM player_seasons;
 SELECT player_name, scoring_class, is_active
 FROM players
 WHERE current_season = 2022;
-
----- 建立 SCD Table
-WITH with_previous AS (
-SELECT
-  player_name,
-  scoring_class,
-  current_season,
-  is_active,
-  LAG(scoring_class) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_scoring_class,
-  LAG(is_active) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_is_active
-FROM players
-),
-with_indicator AS (
-SELECT *, 
-  CASE 
-    WHEN scoring_class <> previous_scoring_class THEN 1 
-    WHEN is_active <> previous_is_active THEN 1 
-    ELSE 0 
-  END AS change_indicator
-FROM with_previous
-),
-with_streak AS (
-SELECT *,
-  SUM(change_indicator) OVER (PARTITION BY player_name ORDER BY current_season) AS streak_identifier
-FROM with_indicator
-)
-
-SELECT 
-  player_name,
-  streak_identifier,
-  is_active,
-  scoring_class,
-  MIN(current_season) AS start_season,
-  MAX(current_season) AS end_season
-FROM with_streak
-GROUP BY player_name, streak_identifier, is_active, scoring_class
-ORDER BY player_name, streak_identifier;
-
-
 
