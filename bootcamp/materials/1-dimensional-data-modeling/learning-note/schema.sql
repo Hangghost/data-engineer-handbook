@@ -52,11 +52,26 @@ SELECT player_name, scoring_class, is_active
 FROM players
 WHERE current_season = 2022;
 
+---- 建立 SCD Table
+WITH with_previous AS (
 SELECT
   player_name,
   scoring_class,
   current_season,
   is_active,
-  LAG(is_active) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_scoring_class,
-  LAG(scoring_class) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_is_active
+  LAG(scoring_class) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_scoring_class,
+  LAG(is_active) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_is_active
 FROM players
+)
+
+---- Establish indicator for scoring_class and is_active change
+WITH with_indicator AS (
+SELECT *, 
+  CASE WHEN scoring_class <> previous_scoring_class THEN 1 
+  ELSE 0 
+  END AS scoring_class_change_indicator,
+  CASE WHEN is_active <> previous_is_active THEN 1 
+  ELSE 0 
+  END AS is_active_change_indicator
+FROM with_previous
+)
