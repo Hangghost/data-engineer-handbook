@@ -10,8 +10,9 @@ SELECT
   LAG(scoring_class) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_scoring_class,
   LAG(is_active) OVER (PARTITION BY player_name ORDER BY current_season) AS previous_is_active
 FROM players
+WHERE current_season <= 2000
 ),
-with_indicator AS (
+with_indicators AS (
 SELECT *, 
   CASE 
     WHEN scoring_class <> previous_scoring_class THEN 1 
@@ -23,7 +24,7 @@ FROM with_previous
 with_streak AS (
 SELECT *,
   SUM(change_indicator) OVER (PARTITION BY player_name ORDER BY current_season) AS streak_identifier
-FROM with_indicator
+FROM with_indicators
 )
 
 SELECT 
@@ -31,8 +32,10 @@ SELECT
   scoring_class,
   is_active,
   MIN(current_season) AS start_season,
-  MAX(current_season) AS end_season
-FROM with_streak
+  MAX(current_season) AS end_season,
+  2000 AS current_season
+  
+  FROM with_streak
 GROUP BY player_name, streak_identifier, is_active, scoring_class
 ORDER BY player_name, streak_identifier;
 
