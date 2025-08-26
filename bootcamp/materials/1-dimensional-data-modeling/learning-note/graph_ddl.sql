@@ -220,19 +220,3 @@ FROM vertices v JOIN edges e
     AND v.type = e.subject_type
 WHERE e.object_type = 'player'::vertex_type
 
-
-
-
-
-
-
--- 查詢
-
-
-
---
-
-
-
-
-
